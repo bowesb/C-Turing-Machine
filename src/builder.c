@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define SB_INIT_CAP 4
-#define MB_INIT_CAP 4
+#define SB_INIT_CAP 16
+#define MB_INIT_CAP 16
 
 /// @brief creates the turing machine
 /// @param input pointer to an array of chars, is the starting contents of the reel
