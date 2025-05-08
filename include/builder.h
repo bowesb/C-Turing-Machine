@@ -24,12 +24,14 @@ typedef struct {
 typedef struct {
     char* input;
     char blank;
+    size_t inputStart;
     StateBuilder** sbuild;
     size_t scount;
     size_t scap;
+    double sleep;
 } MachineBuilder;
 
-MachineBuilder* builder_create(const char* input, char blank);
+MachineBuilder* builder_create(const char* input, char blank, size_t inputStart, double sleep);
 void builder_free(MachineBuilder* MB);
 StateBuilder* builder_add_state(MachineBuilder* MB, const char* name);
 void builder_add_rule(StateBuilder* SB, char in, char out, Dir move, const char* next_name);

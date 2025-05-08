@@ -1,5 +1,6 @@
 #include "machine.h"
 #include <stdio.h>
+#include <unistd.h>
 
 #define REEL_SIZE 1024
 
@@ -11,13 +12,14 @@
 /// @param input pointer to the input
 /// @param blank the char to represent a blank tile on the reel
 /// @return pointer to the machine created
-Machine* machine_create(size_t totStates, State** states, size_t inputSize, size_t inputStart, char* input, char blank) {
+Machine* machine_create(size_t totStates, State** states, size_t inputSize, size_t inputStart, char* input, char blank, double sleep) {
     Machine* M = malloc(sizeof *M);
     M->pos = inputStart;
     M->state = states[0];
     M->totStates = totStates;
     M->blank = blank;
     M->reel = malloc((REEL_SIZE + 2) * sizeof *M->reel);
+    M->sleep = sleep;
     
     for(size_t i = 0; i < REEL_SIZE + 2; ++i) M->reel[i] = blank;
     for(size_t i = 0; i < inputSize; ++i) M->reel[inputStart + i] = input[i];
@@ -35,8 +37,19 @@ void machine_free(Machine* M) {
 /// @brief print 10 tiles of the reel either side of the "scanner" 
 /// @param M the machine whose reel is to be printed
 void machine_print_reel(Machine* M) {
+    printf("\e[1;1H\e[2J");
+    
     for(size_t i = M->pos > 10 ? M->pos - 10 : 0; i < M->pos + 10; ++i) putchar(M->reel[i]);
     putchar('\n');
+    for(size_t i = M->pos > 10 ? M->pos - 10 : 0; i < M->pos; ++i) putchar(' ');
+    printf("^\n\nCurrent State - %s:\n\n", M->state->name);
+    printf("Read\tWrite\tMove\tState\n\n");
+    for(size_t i = 0; i < M->state->totRules; ++i) {
+        printf("%c\t%c\t%d\t%s\n", M->state->inps[i],
+        M->state->outs[i], M->state->next[i], M->state->states[i]->name);
+    }
+
+    sleep(M->sleep);
 }
 
 /// @brief read the current tile, find the correct rule, write, change state, and move as given by the rules

@@ -9,13 +9,15 @@
 /// @param input pointer to an array of chars, is the starting contents of the reel
 /// @param blank the character to represent a blank space on the reel
 /// @return pointer to the machine
-MachineBuilder* builder_create(const char* input, char blank) {
+MachineBuilder* builder_create(const char* input, char blank, size_t inputStart, double sleep) {
     MachineBuilder* MB = malloc(sizeof *MB);
     MB->input = strdup(input);
     MB->blank = blank;
+    MB->inputStart = inputStart;
     MB->scount = 0;
     MB->scap = MB_INIT_CAP;
     MB->sbuild = malloc(sizeof *MB->sbuild * MB->scap);
+    MB->sleep = sleep;
     
     return MB;
 }
@@ -87,11 +89,17 @@ Machine* builder_build(MachineBuilder* MB) {
     for(size_t i = 0; i < n; ++i) {
         StateBuilder* SB = MB->sbuild[i];
         State* S = malloc(sizeof *S);
+        
         S->totRules = SB->count;
         S->inps = malloc(SB->count * sizeof *S->inps);
         S->outs = malloc(SB->count * sizeof *S->outs);
         S->states = malloc(SB->count * sizeof *S->states);
         S->next = malloc(SB->count * sizeof *S->next);
+        
+        size_t nameLen = strlen(SB->name) + 1;
+        S->name = malloc(nameLen);
+        strcpy(S->name, SB->name);
+        
         states[i] = S;
     }
     
@@ -111,10 +119,11 @@ Machine* builder_build(MachineBuilder* MB) {
             S->states[j] = idx < n ? states[idx] : NULL;
         }
     }
+    
     size_t inputSize = strlen(MB->input);
-    size_t inputStart = 0;
-    char* tape = strdup(MB->input);
-    Machine* M = machine_create(n, states, inputSize, inputStart, tape, MB->blank);
+    size_t start = MB->inputStart;
+    char*  tape = strdup(MB->input);
+    Machine* M = machine_create(n, states, inputSize, start, tape, MB->blank, MB->sleep);
 
     free(states);
 

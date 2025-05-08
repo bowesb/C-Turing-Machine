@@ -10,9 +10,10 @@ typedef struct {
     char* reel;
     size_t totStates;
     char blank;
+    double sleep;
 } Machine;
 
-Machine* machine_create(size_t totStates, State** states, size_t inputSize, size_t inputStart, char* input, char blank);
+Machine* machine_create(size_t totStates, State** states, size_t inputSize, size_t inputStart, char* input, char blank, double sleep);
 void machine_free(Machine* M);
 void machine_start(Machine* M);
 void machine_step(Machine* M);
