@@ -1,8 +1,16 @@
 #include "machine.h"
 #include <stdio.h>
 
-#define REEL_SIZE 2048
+#define REEL_SIZE 1024
 
+/// @brief creates a mchine from the given inputs
+/// @param totStates total number of states
+/// @param states pointer to an array of pointers holding the addresses of the states
+/// @param inputSize length of the starting data on the reel
+/// @param inputStart initial index of the reel
+/// @param input pointer to the input
+/// @param blank the char to represent a blank tile on the reel
+/// @return pointer to the machine created
 Machine* machine_create(size_t totStates, State** states, size_t inputSize, size_t inputStart, char* input, char blank) {
     Machine* M = malloc(sizeof *M);
     M->pos = inputStart;
@@ -10,22 +18,29 @@ Machine* machine_create(size_t totStates, State** states, size_t inputSize, size
     M->totStates = totStates;
     M->blank = blank;
     M->reel = malloc((REEL_SIZE + 2) * sizeof *M->reel);
+    
     for(size_t i = 0; i < REEL_SIZE + 2; ++i) M->reel[i] = blank;
     for(size_t i = 0; i < inputSize; ++i) M->reel[inputStart + i] = input[i];
     
     return M;
 }
 
+/// @brief frees the memory occupied by a machine
+/// @param M pointer to the machine to be freed from memory
 void machine_free(Machine* M) {
     free(M->reel);
     free(M);
 }
 
+/// @brief print 10 tiles of the reel either side of the "scanner" 
+/// @param M the machine whose reel is to be printed
 void machine_print_reel(Machine* M) {
     for(size_t i = M->pos > 10 ? M->pos - 10 : 0; i < M->pos + 10; ++i) putchar(M->reel[i]);
     putchar('\n');
 }
 
+/// @brief read the current tile, find the correct rule, write, change state, and move as given by the rules
+/// @param M pointer to the machine that is reading the current reel
 void machine_step(Machine* M) {
     if(!M->state) return;
     char inp = M->reel[M->pos];
@@ -46,6 +61,8 @@ void machine_step(Machine* M) {
     machine_print_reel(M);
 }
 
+/// @brief first step of the machine
+/// @param M pointer to the machine to start
 void machine_start(Machine* M) {
     while(M->state) {
         char inp = M->reel[M->pos];

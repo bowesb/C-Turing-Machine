@@ -1,6 +1,13 @@
 #include "state.h"
 #include <stdlib.h>
 
+/// @brief creates a state for a machine
+/// @param totRules the number of rules the state will hold
+/// @param inps the chars the state can read and do something with
+/// @param outs the chars the state can write to the reel
+/// @param states pointer to an array of states the machine can move to from this state
+/// @param next pointer to an array holding the moves for a given input - left/right
+/// @return pointer to the state
 State* state_create(size_t totRules, const char* inps, const char* outs, State** states, const short* next) {
     State* S = malloc(sizeof *S);
     S->totRules = totRules;
@@ -18,6 +25,8 @@ State* state_create(size_t totRules, const char* inps, const char* outs, State**
     return S;
 }
 
+/// @brief frees the memory occupied by the state
+/// @param S pointer to the state to be freed
 void state_free(State* S) {
     free(S->inps);
     free(S->outs);

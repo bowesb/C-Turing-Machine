@@ -30,9 +30,9 @@ typedef struct {
 } MachineBuilder;
 
 MachineBuilder* builder_create(const char* input, char blank);
-void builder_free(MachineBuilder* mb);
-StateBuilder* builder_add_state(MachineBuilder* mb, const char* name);
-void builder_add_rule(StateBuilder* sb, char in, char out, Dir move, const char* next_name);
-Machine* builder_build(MachineBuilder* mb);
+void builder_free(MachineBuilder* MB);
+StateBuilder* builder_add_state(MachineBuilder* MB, const char* name);
+void builder_add_rule(StateBuilder* SB, char in, char out, Dir move, const char* next_name);
+Machine* builder_build(MachineBuilder* MB);
 
 #endif
